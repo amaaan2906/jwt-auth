@@ -1,0 +1,30 @@
+{
+	"name": "jwt-auth",
+	"version": "1.0.0",
+	"description": "",
+	"main": "server.js",
+	"dependencies": {
+		"bcryptjs": "^2.4.3",
+		"express": "^4.17.1",
+		"joi": "^17.3.0",
+		"jsonwebtoken": "^8.5.1",
+		"mongoose": "^5.11.11"
+	},
+	"devDependencies": {
+		"nodemon": "^2.0.7",
+		"dotenv": "^8.2.0",
+	},
+	"scripts": {
+		"dev": "nodemon server.js",
+		"start": "node server.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/amaaan2906/jwt-auth.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"bugs": {},
+	"homepage": "https://github.com/amaaan2906/jwt-auth#readme"
+}
