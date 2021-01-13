@@ -3,10 +3,10 @@ const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 const cors = require("cors");
+const path = require("path");
 require("dotenv").config();
 
 const User = require("./models/User");
-
 const verifyToken = require("./routes/auth/verifyToken");
 
 const app = express();
@@ -21,11 +21,25 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(cors());
 
-app.use("/jwt", require("./routes/auth/auth"));
+app.use("/auth", require("./routes/auth/auth"));
 
-app.get("/", (req, res) => {
-	// res.cookie("a", "testcookie", { httpOnly: true });
-	res.json({ msg: "Hello" });
+// app.get("/", (req, res) => {
+// 	// res.cookie("a", "testcookie", { httpOnly: true });
+// 	res.json({ msg: "Hello" });
+// });
+
+app.get("/login", (req, res) => {
+	if (!req.query.callback) res.redirect("/404");
+	return res.sendFile(path.join(__dirname, "public/login.html"));
+});
+
+app.get("/register", (req, res) => {
+	if (!req.query.callback) res.redirect("/404");
+	return res.sendFile(path.join(__dirname, "public/register.html"));
+});
+
+app.get("/404", (req, res) => {
+	res.sendFile(path.join(__dirname, "public/404.html"));
 });
 
 app.get("/protected", verifyToken, async (req, res) => {
@@ -50,4 +64,5 @@ app.listen(port, () => {
  * https://stackoverflow.com/questions/27726066/jwt-refresh-token-flow
  * https://jwt.io/
  * https://www.npmjs.com/package/jsonwebtoken
+ * todo: https://www.jbspeakr.cc/howto-single-use-jwt/
  */
