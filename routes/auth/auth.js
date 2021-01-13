@@ -27,6 +27,7 @@ router.post("/login", async (req, res) => {
 	// create jwt refresh token
 	const refreshToken = jwt.sign({ id: exists._id }, process.env.REFRESH_SECRET);
 	// send refresh and access token on login
+	res.cookie("refresh", refreshToken, { httpOnly: true });
 	return res.status(200).json({ accessToken, refreshToken });
 });
 

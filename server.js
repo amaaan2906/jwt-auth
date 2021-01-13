@@ -1,6 +1,8 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
+const cors = require("cors");
 require("dotenv").config();
 
 const User = require("./models/User");
@@ -16,10 +18,13 @@ mongoose.connect(
 
 app.use(express.json());
 app.use(morgan("dev"));
+app.use(cookieParser());
+app.use(cors());
 
 app.use("/jwt", require("./routes/auth/auth"));
 
 app.get("/", (req, res) => {
+	// res.cookie("a", "testcookie", { httpOnly: true });
 	res.json({ msg: "Hello" });
 });
 
@@ -38,3 +43,11 @@ const port = process.env.PORT || 1234;
 app.listen(port, () => {
 	console.log(`Server listening on port ${port}`);
 });
+
+/**
+ * Resources:
+ * https://medium.com/@itsgosho2/how-to-transfer-http-only-cookies-with-express-back-end-and-the-fetch-api-2035f0ac48d9
+ * https://stackoverflow.com/questions/27726066/jwt-refresh-token-flow
+ * https://jwt.io/
+ * https://www.npmjs.com/package/jsonwebtoken
+ */
