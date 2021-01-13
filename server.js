@@ -24,11 +24,12 @@ app.get("/", (req, res) => {
 });
 
 app.get("/protected", verifyToken, async (req, res) => {
+	if (req.user.jwtError) return res.status(400).send(req.user.jwtError.message);
 	if (req.user.verified) {
 		const userId = req.user.id;
 		const user = await User.findById(userId);
-		res.status(200).send(`Logged in as ${user.name.toUpperCase()}`);
-	} else res.status(401).send("Logged Out");
+		return res.status(200).send(`Logged in as ${user.name.toUpperCase()}`);
+	} else return res.status(401).send("Logged Out");
 });
 
 const port = process.env.PORT || 1234;

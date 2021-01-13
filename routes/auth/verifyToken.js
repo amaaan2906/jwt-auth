@@ -13,7 +13,8 @@ module.exports = function (req, res, next) {
 			req.user = tokenData;
 			next();
 		} catch (error) {
-			res.status(400).json(error);
+			req.user = { verified: false, jwtError: error };
+			next();
 		}
 	}
 };
