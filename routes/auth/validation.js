@@ -12,7 +12,7 @@ const registerValidation = (data) => {
 
 const loginValidation = (data) => {
 	const validUser = Joi.object({
-		email: Joi.string().email().required(),
+		username: Joi.string().min(5).max(255).required(),
 		password: Joi.string().min(8).max(1024).required(),
 	});
 	return validUser.validate(data);

@@ -1,6 +1,5 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
-const { exist } = require("joi");
 const jwt = require("jsonwebtoken");
 const User = require("../../models/User");
 const {
@@ -8,20 +7,39 @@ const {
 	registerValidation: register,
 } = require("./validation");
 
-router.post("/login", (req, res) => {});
+router.post("/login", async (req, res) => {
+	// user data validation
+	const validation = login(req.body);
+	if (validation.error)
+		return res.status(400).json(validation.error.details[0]);
+	// check if username exists
+	let exists = await User.findOne({ username: req.body.username });
+	if (!exists) return res.status(400).json({ msg: "invalid username" });
+	// password check
+	const validPwd = await bcrypt.compare(req.body.password, exists.password);
+	if (!validPwd) return res.status(400).json({ msg: "invalid password" });
+	const jwtToken = jwt.sign(
+		{ username: req.body.username, id: exists._id },
+		process.env.JWT_SECRET,
+		{ expiresIn: "1h" }
+	);
+	return res.status(200).header("jwt", jwtToken).json(jwtToken);
+});
 
 router.post("/register", async (req, res) => {
+	// user data validation
 	const validation = register(req.body);
-	if (validation.error) return res.json(validation.error.details[0]);
+	if (validation.error)
+		return res.status(400).json(validation.error.details[0]);
 	// check if email is available
-	let exists = await User.findOne({ email: `${req.body.email}` });
+	let exists = await User.findOne({ email: req.body.email });
 	if (exists) {
 		res.status(400).json({
 			message: "duplicate email",
 		});
 	}
 	// check if username is available
-	exists = await User.findOne({ username: `${req.body.username}` });
+	exists = await User.findOne({ username: req.body.username });
 	if (exists) {
 		res.status(400).json({
 			message: "duplicate username",
