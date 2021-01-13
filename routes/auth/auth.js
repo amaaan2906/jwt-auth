@@ -2,33 +2,40 @@ const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../../models/User");
-const {
-	loginValidation: login,
-	registerValidation: register,
-} = require("./validation");
+const { loginValidation, registerValidation } = require("./validation");
 
+/**
+ *
+ */
 router.post("/login", async (req, res) => {
 	// user data validation
-	const validation = login(req.body);
+	const validation = loginValidation(req.body);
 	if (validation.error)
 		return res.status(400).json(validation.error.details[0]);
 	// check if username exists
 	let exists = await User.findOne({ username: req.body.username });
-	if (!exists) return res.status(400).json({ msg: "invalid username" });
+	if (!exists) return res.status(400).json({ msg: "invalid username" }); // invalid username error response
 	// password check
 	const validPwd = await bcrypt.compare(req.body.password, exists.password);
-	if (!validPwd) return res.status(400).json({ msg: "invalid password" });
-	const jwtToken = jwt.sign(
-		{ username: req.body.username, id: exists._id },
-		process.env.JWT_SECRET,
-		{ expiresIn: "1h" }
+	if (!validPwd) return res.status(400).json({ msg: "invalid password" }); // invalid password error response
+	// create jwt access token
+	const accessToken = jwt.sign(
+		{ id: exists._id },
+		process.env.ACCESS_SECRET,
+		{ expiresIn: 60 } // 1 min
 	);
-	return res.status(200).header("jwt", jwtToken).json(jwtToken);
+	// create jwt refresh token
+	const refreshToken = jwt.sign({ id: exists._id }, process.env.REFRESH_SECRET);
+	// send refresh and access token on login
+	return res.status(200).json({ accessToken, refreshToken });
 });
 
+/**
+ *
+ */
 router.post("/register", async (req, res) => {
 	// user data validation
-	const validation = register(req.body);
+	const validation = registerValidation(req.body);
 	if (validation.error)
 		return res.status(400).json(validation.error.details[0]);
 	// check if email is available
@@ -62,6 +69,30 @@ router.post("/register", async (req, res) => {
 		res.status(200).json({ id: save._id, username: save.username });
 	} catch (error) {
 		res.status(500).json(error);
+	}
+});
+
+/**
+ *
+ */
+router.post("/refresh", async (req, res) => {
+	// get refresh token from request body
+	const refreshToken = req.body.refreshToken;
+	if (!refreshToken) return res.sendStatus(401);
+	// decode refresh token
+	try {
+		const tokenData = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+		const userId = tokenData.id;
+		if (!userId) return res.sendStatus(403);
+		// create jwt access token
+		const accessToken = jwt.sign(
+			{ id: userId },
+			process.env.ACCESS_SECRET,
+			{ expiresIn: 60 } // 1 min
+		);
+		return res.status(200).json(accessToken);
+	} catch (error) {
+		return res.status(403).json(error);
 	}
 });
 

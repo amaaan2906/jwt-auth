@@ -24,11 +24,13 @@ app.get("/", (req, res) => {
 });
 
 app.get("/protected", verifyToken, async (req, res) => {
-	if (req.user.jwtError) return res.status(400).send(req.user.jwtError.message);
-	if (req.user.verified) {
+	// if (req.user.jwtError) return res.status(400).send(req.user.jwtError.message);
+	if (req.user) {
 		const userId = req.user.id;
 		const user = await User.findById(userId);
-		return res.status(200).send(`Logged in as ${user.name.toUpperCase()}`);
+		const temp = JSON.parse(JSON.stringify(user));
+		delete temp.password;
+		return res.status(200).json(temp);
 	} else return res.status(401).send("Logged Out");
 });
 
