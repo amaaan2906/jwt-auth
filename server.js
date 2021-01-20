@@ -22,6 +22,7 @@ app.use(cookieParser());
 app.use(cors());
 
 app.use("/auth", require("./routes/auth/auth"));
+app.use(express.static("./public"));
 
 // app.get("/", (req, res) => {
 // 	// res.cookie("a", "testcookie", { httpOnly: true });
@@ -29,17 +30,18 @@ app.use("/auth", require("./routes/auth/auth"));
 // });
 
 app.get("/login", (req, res) => {
-	if (!req.query.callback) res.redirect("/404");
-	return res.sendFile(path.join(__dirname, "public/login.html"));
+	if (!req.query.callback) res.redirect('/404?error="url"');
+	return res.redirect(`/login.html?callback=${req.query.callback}`);
 });
 
 app.get("/register", (req, res) => {
 	if (!req.query.callback) res.redirect("/404");
-	return res.sendFile(path.join(__dirname, "public/register.html"));
+	return res.redirect(`/register.html?callback=${req.query.callback}`);
 });
 
 app.get("/404", (req, res) => {
-	res.sendFile(path.join(__dirname, "public/404.html"));
+	console.log(req.params);
+	res.redirect(`/404.html?error="${req.query.error}"`);
 });
 
 app.get("/protected", verifyToken, async (req, res) => {
@@ -65,4 +67,5 @@ app.listen(port, () => {
  * https://jwt.io/
  * https://www.npmjs.com/package/jsonwebtoken
  * todo: https://www.jbspeakr.cc/howto-single-use-jwt/
+ * https://stackoverflow.com/questions/20343496/set-cookie-then-redirect
  */

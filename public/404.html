@@ -3,9 +3,45 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Error</title>
+		<link rel="stylesheet" type="text/css" href="404.css" />
+		<title>404</title>
 	</head>
 	<body>
-		<h1>404</h1>
+		<header>
+			<div class="brand"></div>
+		</header>
+		<main>
+			<span id="title">404</span>
+			<div class="error">Invalid Request</div>
+			<button class="home" id="home" onclick="home()">Go Home</button>
+		</main>
+		<footer>
+			<div class="left">
+				<div class="brand"></div>
+				<div class="links">
+					<a href="">Home</a> |
+					<a href=""> About </a>
+				</div>
+			</div>
+			<div class="right">
+				<p>&copy; All Rights Reserved</p>
+				<a href="">Terms of Use</a>
+			</div>
+		</footer>
+		<script>
+			window.onload = () => {
+				const urlString = window.location.search;
+				const urlParam = new URLSearchParams(urlString);
+				if (urlParam.has("error")) {
+					const error = document.querySelector(".error");
+					const msg = urlParam.get("error");
+					if (msg === "url")
+						error.textContent = "Invalid or Missing callback URL";
+				}
+			};
+			function home() {
+				window.location.replace(`/login?callback=test`);
+			}
+		</script>
 	</body>
 </html>

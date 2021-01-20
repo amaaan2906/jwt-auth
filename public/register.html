@@ -3,9 +3,63 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" type="text/css" href="register.css" />
 		<title>Register</title>
 	</head>
 	<body>
-		<h1>Register</h1>
+		<header>
+			<div class="brand"></div>
+		</header>
+		<main>
+			<span id="title">Register</span>
+			<div class="input">
+				<span class="label" id="name">Name</span>
+				<input type="text" />
+			</div>
+			<div class="input">
+				<span class="label" id="email">Email</span>
+				<input type="email" />
+			</div>
+			<div class="input">
+				<span class="label" id="password1">Password</span>
+				<input type="password" />
+			</div>
+			<div class="input">
+				<span class="label" id="password2">Confirm Password</span>
+				<input type="password" />
+			</div>
+			<button class="submit" id="submit" onclick="register()">Submit</button>
+		</main>
+		<footer>
+			<div class="left">
+				<div class="brand"></div>
+				<div class="links">
+					<a href="">Home</a> |
+					<a href=""> About </a>
+				</div>
+			</div>
+			<div class="right">
+				<p>&copy; All Rights Reserved</p>
+				<a href="">Terms of Use</a>
+			</div>
+		</footer>
+		<script>
+			window.onload = () => {
+				const urlString = window.location.search;
+				const urlParam = new URLSearchParams(urlString);
+				if (urlParam.has("error")) {
+					const error = document.querySelector(".error");
+					const msg = urlParam.get("error");
+					if (msg === "url")
+						error.textContent = "Invalid or Missing callback URL";
+				}
+			};
+			function register() {
+				// validate inputs
+				// make api call, send validated data
+				// wait for success response
+				// then redirect to login page with callback url(query)
+			}
+		</script>
 	</body>
 </html>

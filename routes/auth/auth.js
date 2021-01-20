@@ -13,11 +13,14 @@ router.post("/login", async (req, res) => {
 	if (validation.error)
 		return res.status(400).json(validation.error.details[0]);
 	// check if username exists
-	let exists = await User.findOne({ username: req.body.username });
+	const exists = await User.findOne({ username: req.body.username });
 	if (!exists) return res.status(400).json({ msg: "invalid username" }); // invalid username error response
 	// password check
 	const validPwd = await bcrypt.compare(req.body.password, exists.password);
 	if (!validPwd) return res.status(400).json({ msg: "invalid password" }); // invalid password error response
+	// duplicate user
+	const userInfo = JSON.parse(JSON.stringify(exists));
+	delete userInfo.password;
 	// create jwt access token
 	const accessToken = jwt.sign(
 		{ id: exists._id },
@@ -28,7 +31,7 @@ router.post("/login", async (req, res) => {
 	const refreshToken = jwt.sign({ id: exists._id }, process.env.REFRESH_SECRET);
 	// send refresh and access token on login
 	res.cookie("refresh", refreshToken, { httpOnly: true });
-	return res.status(200).json({ accessToken, refreshToken });
+	return res.status(200).json({ userInfo, accessToken, refreshToken });
 });
 
 /**
