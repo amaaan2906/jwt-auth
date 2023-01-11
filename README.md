@@ -1,1 +1,1 @@
-Centralized auth service
+# Centralized auth service
