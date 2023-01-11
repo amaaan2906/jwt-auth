@@ -8,11 +8,11 @@ build/
 .env.*.local
 
 # private data
-public/
+private/
 
 # npm
 .DS_Store
-node_modules
+node_modules/
 
 # Editor directories and files
 .idea
