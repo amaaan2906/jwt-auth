@@ -8,7 +8,7 @@ build/
 .env.*.local
 
 # private data
-pubilc/
+public/
 
 # npm
 .DS_Store
