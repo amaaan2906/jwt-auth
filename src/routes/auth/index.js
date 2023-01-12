@@ -7,6 +7,8 @@ import jwt from "jsonwebtoken"
 import "#config/db.mongo.js"
 import User from "#model/user.mongo.js"
 
+import { loginValidation, registerValidation } from "#helper/authValidation.js"
+
 auth
 	.route("/login")
 	.get((req, res) => {
@@ -18,10 +20,10 @@ auth
 		})
 	})
 	.post(async (req, res) => {
-		// // user data validation
-		// const validation = loginValidation(req.body)
-		// if (validation.error)
-		// 	return res.status(400).json(validation.error.details[0])
+		// user data validation
+		const validation = loginValidation(req.body)
+		if (validation.error)
+			return res.status(400).json(validation.error.details[0])
 		// check if username exists
 		const exists = await User.findOne({ username: req.body.username })
 		if (!exists) return res.status(400).json({ msg: "invalid username" }) // invalid username error response
@@ -62,10 +64,10 @@ auth
 		})
 	})
 	.post(async (req, res) => {
-		// // user data validation
-		// const validation = registerValidation(req.body)
-		// if (validation.error)
-		// 	return res.status(400).json(validation.error.details[0])
+		// user data validation
+		const validation = registerValidation(req.body)
+		if (validation.error)
+			return res.status(400).json(validation.error.details[0])
 		// check if email is available
 		let exists = await User.findOne({ email: req.body.email })
 		if (exists) {
